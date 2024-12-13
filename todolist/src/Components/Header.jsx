@@ -7,7 +7,7 @@ export default function Header({ isSideBarOpen, toggleSidebar }) {
     localStorage.removeItem("token");
   };
   return (
-    <div className="fixed top-0 left-0 w-full px-4 flex justify-between items-center bg-[#BCE7FC] py-4">
+    <div className="md:fixed relative top-0 left-0 w-full px-4 flex justify-between items-center bg-[#BCE7FC] py-4">
       <div className="flex gap-6">
       {!isSideBarOpen && (
           <button

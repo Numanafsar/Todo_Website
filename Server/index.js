@@ -6,8 +6,9 @@ const RegistrationDataModel = require("./Models/RegistrationData");
 const NotesModel = require("./Models/Notes");
 const jwt = require("jsonwebtoken");
 const auth = require("./middlewares/auth");
-const SECRET_KEY =
-  "b2902047568d75506938e4f2dd9a7a25dd1f31ba8de2c04705c6bf7ce9c9663aa1df9fd4c2b8f1cf56d7bfe4beec4e75cfd6d935e162069ecc0eccfef9816dfd";
+const cron = require("node-cron");
+const dotenv = require('dotenv').config();
+const secretKey = process.env.SECRET_KEY
 
 const app = express();
 app.use(cors());
@@ -22,13 +23,37 @@ mongoose
     console.log("Error connecting to MongoDB:", err);
   });
 
+cron.schedule("0 0 * * *", async () => {
+  console.log("Running cron job to reset recurring tasks");
+
+  try {
+    const today = new Date().toISOString().split("T")[0];
+
+    const tasks = await TodoModel.find({
+      isRecurring: true,
+      done: true,
+      date: { $lte: today },
+    });
+
+    for (const task of tasks) {
+      await TodoModel.findByIdAndUpdate(task._id, {
+        $set: { done: false },
+      });
+
+      console.log(`Task ${task._id} status reset to "undone"`);
+    }
+  } catch (error) {
+    console.error("Error resetting recurring tasks:", error.message);
+  }
+});
+
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   RegistrationDataModel.findOne({ email: email })
     .then((user) => {
       if (user) {
         if (user.password === password) {
-          const token = jwt.sign({ id: user._id }, SECRET_KEY);
+          const token = jwt.sign({ id: user._id }, process.env.SECRET_KEY);
           return res
             .status(200)
             .json({ message: "Login successful", token: token });
@@ -102,8 +127,8 @@ app.post("/add-note", auth, async (req, res) => {
   try {
     const user = await RegistrationDataModel.findByIdAndUpdate(
       userId,
-      { $push: { Notes_id: noteId } }, 
-      { new: true } 
+      { $push: { Notes_id: noteId } },
+      { new: true }
     );
     res.status(200).json({ message: "Note added successfully", user });
   } catch (error) {
@@ -154,14 +179,15 @@ async function typeToday(req, res) {
   const userId = req.userId;
   const currentDate = new Date().toISOString().split("T")[0];
   const nextDates = await TodoModel.distinct("nextDates", {
-    userId, 
-  })
-  const todoData = await TodoModel.find({ 
-    userId, 
-    date: { $in: [currentDate, ...nextDates] } 
+    userId,
+  });
+  const todoData = await TodoModel.find({
+    userId,
+    date: { $in: [currentDate, ...nextDates] },
   });
   const recurringData = await TodoModel.find({
     userId,
+    date: { $lte: currentDate },
     recurrencePeriod: "Daily",
   });
   const combinedData = [...todoData, ...recurringData];
@@ -182,13 +208,13 @@ async function typeUpcoming(req, res) {
   const startDate = new Date(currentDate);
   startDate.setDate(currentDate.getDate() + 1);
   const endDate = new Date(currentDate);
-  endDate.setDate(currentDate.getDate() + 7); 
+  endDate.setDate(currentDate.getDate() + 7);
   const startDateString = startDate.toISOString().split("T")[0];
   const endDateString = endDate.toISOString().split("T")[0];
 
   const todoData = await TodoModel.find({
     userId,
-    date: { $gte: startDateString, $lte: endDateString }
+    date: { $gte: startDateString, $lte: endDateString },
   });
 
   if (todoData.length < 1) {
@@ -249,20 +275,20 @@ app.post("/add", auth, async (req, res) => {
     if (isRecurring === true && recurrencePeriod === "Weekly") {
       let currentDate = new Date(date);
       for (let i = 0; i < 100; i++) {
-        currentDate.setDate(currentDate.getDate() + 7); // Increment by 7 days
-        const formattedDate = currentDate.toISOString().split("T")[0]; // Format to YYYY-MM-DD
-        nextDates.push(formattedDate); // Format and push to array
+        currentDate.setDate(currentDate.getDate() + 7);
+        const formattedDate = currentDate.toISOString().split("T")[0];
+        nextDates.push(formattedDate);
       }
     }
     if (isRecurring === true && recurrencePeriod === "Monthly") {
       let currentDate = new Date(date);
       for (let i = 0; i < 50; i++) {
-        currentDate.setMonth(currentDate.getMonth() + 1); // Increment by 1 month
-        const formattedDate = currentDate.toISOString().split("T")[0]; // Format to YYYY-MM-DD
-        nextDates.push(formattedDate); // Format and push to array
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        const formattedDate = currentDate.toISOString().split("T")[0];
+        nextDates.push(formattedDate);
       }
     }
-    
+
     const newTodo = await TodoModel.create({
       task,
       date,
@@ -337,29 +363,11 @@ app.listen(3001, () => {
   console.log("Server is running on port 3001");
 });
 
-
 /*
-
-date:11
-reccuring period weekly
-reccurrence:true
-
-
-api
-when recurrence true
-give and array of dates where current date + 7 ==== values could be 10 20
-
-query
-
-current ya nextDates
-
-
-
 daily cron job
 todos get 
 find where reccurence true 
 nexDtates .. remove first and add another 
 
 [27,4,11,18,25,2,9]
-
 */

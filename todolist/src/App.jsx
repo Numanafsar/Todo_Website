@@ -15,8 +15,8 @@ export default function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="notes" element={<Notes />} />
-          <Route path="*" element={<ErrorPage />} />
         </Route>
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     </div>
   );

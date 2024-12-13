@@ -45,6 +45,7 @@ export default function Home() {
       setTodos(todoData);
     } catch (error) {
       console.error("Error fetching user data:", error);
+      navigate("/login");
     }
   }
   useEffect(() => {
@@ -97,10 +98,10 @@ export default function Home() {
 
 
   return (
-    <div>
-      <div className="md:pl-[16rem]  flex flex-col items-center pt-[100px] max-sm:mx-1">
+    <div className="">
+      <div className="flex flex-col items-center pt-[30px] md:pt-[100px] max-sm:mx-2">
         <div className="sm:w-[500px]">
-          <div className="pb-10 flex justify-between flex-wrap">
+          <div className="md:pb-10 pb-5 flex justify-between flex-wrap">
             <Card
               text="Today"
               bgColor="bg-[#60B4DD]"
@@ -118,7 +119,7 @@ export default function Home() {
             />
           </div>
 
-          <div className="mb-10 bg-[#BCE7FC] rounded-xl p-3">
+          <div className="md:mb-10 mb-5 bg-[#BCE7FC] rounded-xl p-3">
             <div className="flex justify-between items-center">
               <h1 className="sm:text-xl text-lg font-medium">
                 Mr. {userData.user.name}
@@ -209,15 +210,13 @@ export default function Home() {
 
                 {/* Upcoming Tasks UI */}
                 {taskType === "upcoming" ? (
-                  <div className="mt-4 ">
-                    {/* Loop through the next 7 days */}
+                  <div className="mt-4">
                     {Array.from({ length: 7 }).map((_, index) => {
                       const upcomingDate = new Date();
                       upcomingDate.setDate(upcomingDate.getDate() + index + 1); // Next 7 days
                       const formattedDate =
                         upcomingDate.toLocaleDateString("en-GB");
 
-                      // Filter tasks for the specific upcoming date
                       const tasksForDate = todos.filter(
                         (todo) =>
                           new Date(todo.date).toLocaleDateString("en-GB") ===
@@ -237,7 +236,7 @@ export default function Home() {
                             tasksForDate.map((todo) => (
                               <div
                                 key={todo._id}
-                                className="rounded-lg gap-2 cursor-pointer py-2 px-3 mb-5 bg-gray-800 font-serif text-white "
+                                className="rounded-lg gap-2 cursor-pointer py-2 px-3 bg-gray-800 text-white"
                               >
                                 <div className="flex justify-between items-center">
                                   <div
@@ -357,7 +356,3 @@ export default function Home() {
     </div>
   );
 }
-
-
-
-

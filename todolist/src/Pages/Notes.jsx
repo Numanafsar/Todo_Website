@@ -103,9 +103,9 @@ export default function Notes() {
     fetchNotes();
   }, [isModelOpen]);
   return (
-    <div className="w-full md:pl-[16rem] flex">
+    <div className="w-full flex">
       <div className="w-full mx-[5%]">
-        <div className="flex flex-wrap gap-4 mt-[130px]">
+        <div className="flex flex-wrap max-md:justify-center gap-4 pt-[30px] md:pt-[100px]">
           {notes.map((note, index) => (
             <div
               key={note._id}
