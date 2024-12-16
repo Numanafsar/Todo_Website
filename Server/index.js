@@ -7,8 +7,8 @@ const NotesModel = require("./Models/Notes");
 const jwt = require("jsonwebtoken");
 const auth = require("./middlewares/auth");
 const cron = require("node-cron");
-const dotenv = require('dotenv').config();
-const secretKey = process.env.SECRET_KEY
+const dotenv = require("dotenv").config();
+const secretKey = process.env.SECRET_KEY;
 
 const app = express();
 app.use(cors());
@@ -17,7 +17,9 @@ app.use(express.json());
 mongoose
   .connect("mongodb://localhost:27017/TodoList")
   .then(() => {
-    console.log("Connected to MongoDB");
+    app.listen(3001, () => {
+      console.log("Server is running on port 3001 and connected to DB");
+    });
   })
   .catch((err) => {
     console.log("Error connecting to MongoDB:", err);
@@ -216,11 +218,21 @@ async function typeUpcoming(req, res) {
     userId,
     date: { $gte: startDateString, $lte: endDateString },
   });
-
-  if (todoData.length < 1) {
-    return res.status(402).json({ error: "No Data Found Upcoming" });
+  const recurringData = await TodoModel.find({
+    userId,
+    nextDates: { $gte: startDateString, $lte: endDateString },
+    recurrencePeriod: "Weekly",
+  })
+  const combinedData = [...todoData, ...recurringData];
+  const uniqueData = combinedData.filter(
+    (item, index, self) =>
+      index === self.findIndex((t) => t._id.toString() === item._id.toString())
+  );
+  console.log("Unique Data:", uniqueData);
+  if (uniqueData.length < 1) {
+    return res.status(402).json({ error: "No Data Found" });
   }
-  return res.status(200).json({ todoData });
+  return res.status(200).json({ todoData: uniqueData });
 }
 
 async function typeAll(req, res) {
@@ -358,16 +370,3 @@ app.delete("/delete/:id", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-app.listen(3001, () => {
-  console.log("Server is running on port 3001");
-});
-
-/*
-daily cron job
-todos get 
-find where reccurence true 
-nexDtates .. remove first and add another 
-
-[27,4,11,18,25,2,9]
-*/

@@ -45,13 +45,11 @@ export default function Home() {
       setTodos(todoData);
     } catch (error) {
       console.error("Error fetching user data:", error);
-      navigate("/login");
     }
   }
   useEffect(() => {
     getUserData();
   }, [taskType]);
-
 
   const handleEdit = (id) => {
     const token = localStorage.getItem("token");
@@ -95,7 +93,6 @@ export default function Home() {
       .catch((err) => console.log(err));
   };
   const currentDate = new Date().toLocaleDateString("en-GB");
-
 
   return (
     <div className="">
@@ -212,24 +209,32 @@ export default function Home() {
                 {taskType === "upcoming" ? (
                   <div className="mt-4">
                     {Array.from({ length: 7 }).map((_, index) => {
+                      // Create the upcoming date
                       const upcomingDate = new Date();
-                      upcomingDate.setDate(upcomingDate.getDate() + index + 1); // Next 7 days
+                      upcomingDate.setDate(upcomingDate.getDate() + index + 1);
+
+                      // Format the date in 'en-GB' format
                       const formattedDate =
                         upcomingDate.toLocaleDateString("en-GB");
 
-                      const tasksForDate = todos.filter(
-                        (todo) =>
-                          new Date(todo.date).toLocaleDateString("en-GB") ===
-                          formattedDate
-                      );
+                      // Filter todos for this specific date
+                      const tasksForDate = todos.filter((todo) => {
+                        const todoDate = new Date(todo.nextDates[0]).toLocaleDateString(
+                          "en-GB"
+                        );
+                        return todoDate === formattedDate;
+                      });
 
                       return (
-                        <div key={index}>
+                        <div key={index} className="mb-6">
+                          {/* Display the date */}
                           <h3 className="text-center my-3 text-lg">
                             {formattedDate}
                           </h3>
+
+                          {/* Display tasks or No Task Found */}
                           {tasksForDate.length === 0 ? (
-                            <p className="text-center text-gray-700 bg-gray-100 rounded border p-1 ">
+                            <p className="text-center text-gray-700 bg-gray-100 rounded border p-1">
                               No Task Found
                             </p>
                           ) : (
@@ -239,6 +244,7 @@ export default function Home() {
                                 className="rounded-lg gap-2 cursor-pointer py-2 px-3 bg-gray-800 text-white"
                               >
                                 <div className="flex justify-between items-center">
+                                  {/* Task content */}
                                   <div
                                     className="flex items-center gap-2"
                                     onClick={() => handleEdit(todo._id)}
@@ -256,6 +262,7 @@ export default function Home() {
                                       {todo.task}
                                     </p>
                                   </div>
+                                  {/* Delete Button */}
                                   <div
                                     className="cursor-pointer"
                                     onClick={() => handleDelete(todo._id)}
@@ -263,6 +270,7 @@ export default function Home() {
                                     <BsFillTrashFill />
                                   </div>
                                 </div>
+                                {/* Priority and Deadline */}
                                 <div className="mt-2 bg-[#388db8] rounded-lg p-2 text-black">
                                   <div className="flex justify-center gap-2">
                                     <h1>Priority:</h1>
@@ -289,63 +297,64 @@ export default function Home() {
                 {/* All Tasks UI */}
                 {taskType === "all" ? (
                   <div className="flex flex-col gap-3 mx-auto font-serif mt-2 text-white">
-                    {todos.sort((a, b) => new Date(b.date) - new Date(a.date))
-                    .map((todo) => {
-                      const formattedDate = new Date(
-                        todo.date
-                      ).toLocaleDateString("en-GB"); // Format date as "dd/mm/yyyy"
-                      return (
-                        <>
-                          <p className="text-center mt-1 font-sans text-black text-lg">
-                            {formattedDate}
-                          </p>
-                          <div
-                            key={todo._id}
-                            className="rounded-lg gap-2 cursor-pointer py-2 px-3 bg-gray-800"
-                          >
-                            <div className="flex justify-between items-center">
-                              <div
-                                className="flex items-center gap-2"
-                                onClick={() => handleEdit(todo._id)}
-                              >
-                                {todo.done ? (
-                                  <BsFillCheckCircleFill className="icon text-green-400" />
-                                ) : (
-                                  <BsCircleFill className="text-gray-400" />
-                                )}
-                                <p
-                                  className={`${
-                                    todo.done ? "line-through" : ""
-                                  }`}
+                    {todos
+                      .sort((a, b) => new Date(b.date) - new Date(a.date))
+                      .map((todo) => {
+                        const formattedDate = new Date(
+                          todo.date
+                        ).toLocaleDateString("en-GB"); // Format date as "dd/mm/yyyy"
+                        return (
+                          <>
+                            <p className="text-center mt-1 font-sans text-black text-lg">
+                              {formattedDate}
+                            </p>
+                            <div
+                              key={todo._id}
+                              className="rounded-lg gap-2 cursor-pointer py-2 px-3 bg-gray-800"
+                            >
+                              <div className="flex justify-between items-center">
+                                <div
+                                  className="flex items-center gap-2"
+                                  onClick={() => handleEdit(todo._id)}
                                 >
-                                  {todo.task}
-                                </p>
+                                  {todo.done ? (
+                                    <BsFillCheckCircleFill className="icon text-green-400" />
+                                  ) : (
+                                    <BsCircleFill className="text-gray-400" />
+                                  )}
+                                  <p
+                                    className={`${
+                                      todo.done ? "line-through" : ""
+                                    }`}
+                                  >
+                                    {todo.task}
+                                  </p>
+                                </div>
+                                <div
+                                  className="cursor-pointer"
+                                  onClick={() => handleDelete(todo._id)}
+                                >
+                                  <BsFillTrashFill />
+                                </div>
                               </div>
-                              <div
-                                className="cursor-pointer"
-                                onClick={() => handleDelete(todo._id)}
-                              >
-                                <BsFillTrashFill />
+                              <div className="mt-2 bg-[#388db8] rounded-lg p-2 text-black">
+                                <div className="flex justify-center gap-2">
+                                  <h1>Priority:</h1>
+                                  <p className="text-yellow-400">
+                                    {todo.priority || "N/A"}
+                                  </p>
+                                </div>
+                                <div className="flex justify-center gap-2">
+                                  <h1>Deadline:</h1>
+                                  <p className="text-white">
+                                    {todo.deadlineDate || "No Deadline"}
+                                  </p>
+                                </div>
                               </div>
                             </div>
-                            <div className="mt-2 bg-[#388db8] rounded-lg p-2 text-black">
-                              <div className="flex justify-center gap-2">
-                                <h1>Priority:</h1>
-                                <p className="text-yellow-400">
-                                  {todo.priority || "N/A"}
-                                </p>
-                              </div>
-                              <div className="flex justify-center gap-2">
-                                <h1>Deadline:</h1>
-                                <p className="text-white">
-                                  {todo.deadlineDate || "No Deadline"}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      );
-                    })}
+                          </>
+                        );
+                      })}
                   </div>
                 ) : null}
               </>
