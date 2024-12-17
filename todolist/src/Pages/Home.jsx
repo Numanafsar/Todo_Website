@@ -25,8 +25,7 @@ export default function Home() {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (userResponse.status !== 200) {
-        navigate("/login");
-        return;
+        toast.error("No user data found!");
       }
       const todoResponse = await axios.get(
         `http://localhost:3001/get?type=${taskType}`,
@@ -45,6 +44,10 @@ export default function Home() {
       setTodos(todoData);
     } catch (error) {
       console.error("Error fetching user data:", error);
+      if (error.response.status === 401) {
+        toast.error("Please login first!");
+        navigate("/login");
+      } 
     }
   }
   useEffect(() => {
