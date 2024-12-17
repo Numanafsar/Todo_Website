@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 
 mongoose
-  .connect(`mongodb://${mongoDB}`)
+  .connect(mongoDB)
   .then(() => {
     app.listen(3001, () => {
       console.log("Server is running on port 3001 and connected to DB");
