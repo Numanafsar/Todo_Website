@@ -9,13 +9,14 @@ const auth = require("./middlewares/auth");
 const cron = require("node-cron");
 const dotenv = require("dotenv").config();
 const secretKey = process.env.SECRET_KEY;
+const mongoDB = process.env.MONGODB_URI
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 mongoose
-  .connect("mongodb://localhost:27017/TodoList")
+  .connect(`mongodb://${mongoDB}`)
   .then(() => {
     app.listen(3001, () => {
       console.log("Server is running on port 3001 and connected to DB");
