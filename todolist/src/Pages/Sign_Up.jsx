@@ -17,7 +17,7 @@ export default function Sign_Up() {
       return;
     }
     try {
-      await axios.post("http://localhost:3001/signup", {
+      await axios.post("https://todo-website-p3og.onrender.com/signup", {
         name,
         email,
         password,

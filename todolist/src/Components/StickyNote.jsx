@@ -15,7 +15,7 @@ export default function StickyNote() {
     
       try {
         const response = await axios.post(
-          "http://localhost:3001/notes",
+          "https://todo-website-p3og.onrender.com/notes",
           { title, description, date },
           {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -24,7 +24,7 @@ export default function StickyNote() {
     
         const noteId = response.data._id; 
         await axios.post(
-          "http://localhost:3001/add-note",
+          "https://todo-website-p3og.onrender.com/add-note",
           { noteId },
           {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

@@ -10,14 +10,14 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:3001/login", {
+      const response = await axios.post("https://todo-website-p3og.onrender.com/login", {
         email,
         password,
       });
       localStorage.setItem("token", response.data.token);
       toast.success(response.data.message);
       navigate("/");
-      const response2 = await axios.get("http://localhost:3001/get", {
+      const response2 = await axios.get("https://todo-website-p3og.onrender.com/get", {
         headers: { Authorization: `Bearer ${response.data.token}` },
       });
       const { userData, todoData } = response2.data;

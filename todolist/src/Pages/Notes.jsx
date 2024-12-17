@@ -26,7 +26,7 @@ export default function Notes() {
   const handleEdit = async (noteId) => {
     setIsModelEdit(true); 
     try {
-      const response = await axios.get("http://localhost:3001/notes", {
+      const response = await axios.get("https://todo-website-p3og.onrender.com/notes", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       const note = response.data.find((n) => n._id === noteId);
@@ -44,14 +44,14 @@ export default function Notes() {
   const handleDelete = async (noteId) => {
     
     try {
-      const noteResponse= await axios.get(`http://localhost:3001/notes`, {
+      const noteResponse= await axios.get(`https://todo-website-p3og.onrender.com/notes`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       if (noteResponse.data.find((n) => n._id === noteId)) {
-        await axios.delete(`http://localhost:3001/notes/${noteId}`, {
+        await axios.delete(`https://todo-website-p3og.onrender.com/notes/${noteId}`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
-        const updatedNotes = await axios.get("http://localhost:3001/notes", {
+        const updatedNotes = await axios.get("https://todo-website-p3og.onrender.com/notes", {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         setNotes(updatedNotes.data);
@@ -69,7 +69,7 @@ export default function Notes() {
     }
     try {
       const response = await axios.put(
-        `http://localhost:3001/notes/${selectedNote._id}`,
+        `https://todo-website-p3og.onrender.com/notes/${selectedNote._id}`,
         updatedNote,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -78,7 +78,7 @@ export default function Notes() {
       console.log("Note updated:", response.data);
       setIsModelEdit(false);
   
-      const updatedNotes = await axios.get("http://localhost:3001/notes", {
+      const updatedNotes = await axios.get("https://todo-website-p3og.onrender.com/notes", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setNotes(updatedNotes.data);
@@ -90,7 +90,7 @@ export default function Notes() {
 
   const fetchNotes = async () => {
     try {
-      const response = await axios.get("http://localhost:3001/notes", {
+      const response = await axios.get("https://todo-website-p3og.onrender.com/notes", {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setNotes(response.data); 

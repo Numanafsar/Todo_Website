@@ -17,7 +17,7 @@ export default function Create() {
     }
     try {
       const response = await axios.post(
-        "http://localhost:3001/add",
+        "https://todo-website-p3og.onrender.com/add",
         {
           task: task,
           date: date,
@@ -32,7 +32,7 @@ export default function Create() {
       );
       const todoId = response.data._id;
       await axios.post(
-        "http://localhost:3001/add-todo",
+        "https://todo-website-p3og.onrender.com/add-todo",
         { todoId },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },

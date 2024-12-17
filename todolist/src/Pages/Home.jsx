@@ -21,14 +21,14 @@ export default function Home() {
 
   async function getUserData() {
     try {
-      const userResponse = await axios.get("http://localhost:3001/user", {
+      const userResponse = await axios.get("https://todo-website-p3og.onrender.com/user", {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (userResponse.status !== 200) {
         toast.error("No user data found!");
       }
       const todoResponse = await axios.get(
-        `http://localhost:3001/get?type=${taskType}`,
+        `https://todo-website-p3og.onrender.com/get?type=${taskType}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -61,7 +61,7 @@ export default function Home() {
       return;
     }
     axios
-      .put(`http://localhost:3001/update/${id}`, null, {
+      .put(`https://todo-website-p3og.onrender.com/update/${id}`, null, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -84,7 +84,7 @@ export default function Home() {
       return;
     }
     axios
-      .delete(`http://localhost:3001/delete/${id}`, {
+      .delete(`https://todo-website-p3og.onrender.com/delete/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
